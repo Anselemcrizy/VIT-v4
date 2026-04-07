@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-<<<<<<< HEAD
 import { fetchHealth, fetchHistory, fetchPicks, predictMatch } from './api'
 import AdminPanel from './AdminPanel'
 import MatchDetail from './MatchDetail'
-=======
-import { fetchHealth, fetchHistory, predictMatch } from './api'
-import AdminPanel from './AdminPanel'
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 import './App.css'
 
 const API_KEY = import.meta.env.VITE_API_KEY || 'dev_api_key_12345'
@@ -21,7 +16,6 @@ const DEFAULT_FORM = {
   away: 3.8,
 }
 
-<<<<<<< HEAD
 const MODEL_TYPE_COLORS = {
   Poisson: '#6366f1',
   XGBoost: '#10b981',
@@ -79,18 +73,6 @@ function App() {
   const [page, setPage]               = useState(0)
   const [selectedMatchId, setSelectedMatchId] = useState(null)
   const itemsPerPage = 8
-=======
-function App() {
-  const [activeTab, setActiveTab]   = useState('dashboard')
-  const [health, setHealth]         = useState(null)
-  const [history, setHistory]       = useState([])
-  const [form, setForm]             = useState(DEFAULT_FORM)
-  const [prediction, setPrediction] = useState(null)
-  const [loading, setLoading]       = useState(false)
-  const [error, setError]           = useState('')
-  const [page, setPage]             = useState(0)
-  const itemsPerPage = 5
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 
   const marketOdds = useMemo(
     () => ({ home: parseFloat(form.home), draw: parseFloat(form.draw), away: parseFloat(form.away) }),
@@ -104,13 +86,10 @@ function App() {
     return () => clearInterval(id)
   }, [])
 
-<<<<<<< HEAD
   useEffect(() => {
     if (activeTab === 'picks' && !picks) loadPicks()
   }, [activeTab])
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
   async function fetchHealthStatus() {
     try { setHealth(await fetchHealth()) } catch (e) { setError(e.message) }
   }
@@ -123,7 +102,6 @@ function App() {
     } catch (e) { setError(e.message) }
   }
 
-<<<<<<< HEAD
   async function loadPicks() {
     setPicksLoading(true)
     try {
@@ -133,8 +111,6 @@ function App() {
     finally { setPicksLoading(false) }
   }
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
   async function submitPrediction(e) {
     e.preventDefault()
     if (!form.home_team.trim() || !form.away_team.trim()) { setError('Please enter both team names'); return }
@@ -149,15 +125,10 @@ function App() {
         kickoff_time: new Date(form.kickoff_time).toISOString(),
         market_odds: marketOdds,
       }
-<<<<<<< HEAD
       const res = await predictMatch(payload)
       setPrediction(res)
       await loadHistory()
       if (picks) setPicks(null)
-=======
-      setPrediction(await predictMatch(payload))
-      loadHistory()
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
     } catch (e) { setError(e.message) } finally { setLoading(false) }
   }
 
@@ -166,7 +137,6 @@ function App() {
   const paginated = history.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
   const maxPages  = Math.ceil(history.length / itemsPerPage)
 
-<<<<<<< HEAD
   const tabs = [
     { id: 'dashboard', label: '📊 Dashboard' },
     { id: 'picks',     label: '🏅 Picks' },
@@ -179,16 +149,11 @@ function App() {
         <MatchDetail matchId={selectedMatchId} onClose={() => setSelectedMatchId(null)} />
       )}
 
-=======
-  return (
-    <div className="app-shell">
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
       <header className="hero-panel">
         <div>
           <h1>⚽ VIT Predict</h1>
           <p>12-Model Ensemble for Football Match Predictions</p>
           <div className="tab-bar">
-<<<<<<< HEAD
             {tabs.map(t => (
               <button
                 key={t.id}
@@ -196,20 +161,6 @@ function App() {
                 onClick={() => setActiveTab(t.id)}
               >{t.label}</button>
             ))}
-=======
-            <button
-              className={activeTab === 'dashboard' ? 'tab-btn active' : 'tab-btn'}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              📊 Dashboard
-            </button>
-            <button
-              className={activeTab === 'admin' ? 'tab-btn active' : 'tab-btn'}
-              onClick={() => setActiveTab('admin')}
-            >
-              ⚙️ Admin Panel
-            </button>
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
           </div>
         </div>
         <div className="status-card">
@@ -228,7 +179,6 @@ function App() {
       </header>
 
       <main>
-<<<<<<< HEAD
         {activeTab === 'admin' && (
           <section className="panel">
             <AdminPanel apiKey={API_KEY} />
@@ -256,7 +206,6 @@ function App() {
                     <h3 className="picks-section-title">🏅 Certified Picks ({picks.certified_count})</h3>
                     <p className="picks-section-desc">
                       Mathematically verified edges backed by model consensus from historical training passes.
-                      All child models showing agreement above threshold.
                     </p>
                     <div className="picks-grid">
                       {picks.certified_picks.map(p => (
@@ -301,13 +250,6 @@ function App() {
         )}
 
         {activeTab === 'dashboard' && (
-=======
-        {activeTab === 'admin' ? (
-          <section className="panel">
-            <AdminPanel apiKey={API_KEY} />
-          </section>
-        ) : (
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
           <>
             <section className="panel">
               <h2>🎯 Make a Prediction</h2>
@@ -348,11 +290,7 @@ function App() {
                   <div className="market-grid">
                     {['home', 'draw', 'away'].map(k => (
                       <div key={k} className="field-group">
-<<<<<<< HEAD
                         <label htmlFor={k}>{k.charAt(0).toUpperCase() + k.slice(1)}</label>
-=======
-                        <label htmlFor={k}>{k.charAt(0).toUpperCase() + k.slice(1)} Win{k === 'draw' ? '' : ''}</label>
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                         <input id={k} type="number" min="1" step="0.01" placeholder="2.00"
                           value={form[k]} onChange={e => updateField(k, e.target.value)} required />
                       </div>
@@ -391,7 +329,6 @@ function App() {
                       </div>
                     ))}
                   </dl>
-<<<<<<< HEAD
                   <button
                     className="secondary-button"
                     style={{ marginTop: 12 }}
@@ -399,8 +336,6 @@ function App() {
                   >
                     View Full Detail →
                   </button>
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                 </div>
               )}
             </section>
@@ -411,33 +346,22 @@ function App() {
                   <h2>📈 Prediction History</h2>
                   <button type="button" onClick={loadHistory} className="secondary-button">Refresh</button>
                 </div>
-<<<<<<< HEAD
                 <p className="history-hint">Click any row to view model insights and market breakdown.</p>
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                 <div className="history-table-wrapper">
                   <table className="history-table">
                     <thead>
                       <tr>
                         <th>Match</th><th>Home %</th><th>Draw %</th><th>Away %</th>
-<<<<<<< HEAD
                         <th>O2.5</th><th>BTTS</th><th>Edge</th><th>Stake</th><th>Time</th>
-=======
-                        <th>Edge</th><th>Stake</th><th>Time</th>
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                       </tr>
                     </thead>
                     <tbody>
                       {paginated.map(item => (
-<<<<<<< HEAD
                         <tr
                           key={`${item.match_id}-${item.timestamp}`}
                           className="history-row-clickable"
                           onClick={() => setSelectedMatchId(item.match_id)}
                         >
-=======
-                        <tr key={`${item.match_id}-${item.timestamp}`}>
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                           <td style={{ fontWeight: 500 }}>
                             <span style={{ color: '#64748b', fontSize: '0.85rem' }}>#{item.match_id}</span>{' '}
                             {item.home_team?.split(' ').slice(-1)[0]} v {item.away_team?.split(' ').slice(-1)[0]}
@@ -445,11 +369,8 @@ function App() {
                           <td>{(item.home_prob * 100).toFixed(1)}%</td>
                           <td>{(item.draw_prob * 100).toFixed(1)}%</td>
                           <td>{(item.away_prob * 100).toFixed(1)}%</td>
-<<<<<<< HEAD
                           <td>{item.over_25_prob != null ? `${(item.over_25_prob * 100).toFixed(0)}%` : '—'}</td>
                           <td>{item.btts_prob != null ? `${(item.btts_prob * 100).toFixed(0)}%` : '—'}</td>
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                           <td style={{ color: (item.final_ev || item.edge) > 0 ? '#10b981' : '#ef4444', fontWeight: 600 }}>
                             {((item.final_ev || item.edge) * 100).toFixed(2)}%
                           </td>

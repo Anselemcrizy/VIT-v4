@@ -29,7 +29,6 @@ export async function fetchHistory(limit = 10, offset = 0) {
   return apiFetch(`/history?limit=${limit}&offset=${offset}`)
 }
 
-<<<<<<< HEAD
 export async function fetchMatchDetail(matchId) {
   return apiFetch(`/history/${matchId}`)
 }
@@ -38,8 +37,6 @@ export async function fetchPicks() {
   return apiFetch('/history/picks')
 }
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 export async function predictMatch(matchData) {
   return apiFetch('/predict', { method: 'POST', body: JSON.stringify(matchData) })
 }

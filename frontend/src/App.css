@@ -659,7 +659,6 @@ button {
   letter-spacing: 0.04em;
   background: white;
 }
-<<<<<<< HEAD
 
 /* ── History Row Clickable ─────────────────────────────── */
 .history-row-clickable {
@@ -1003,6 +1002,3 @@ button {
   gap: 8px;
 }
 .picks-empty > div { font-size: 2.5rem; }
-
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
