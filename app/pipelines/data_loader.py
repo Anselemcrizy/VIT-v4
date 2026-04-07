@@ -3,7 +3,7 @@ import asyncio
 import logging
 import re
 from typing import Dict, List, Optional, Any
-from dataclasses import field
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from app.services.football_api import FootballDataClient
@@ -24,6 +24,7 @@ def normalize_team_name(name: str) -> str:
     return cleaned
 
 
+@dataclass
 class MatchContext:
     """Container for all data related to upcoming matches"""
     fixtures: List[Dict] = field(default_factory=list)
