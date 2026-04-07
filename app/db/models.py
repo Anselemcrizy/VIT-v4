@@ -12,8 +12,6 @@ class Match(Base):
     home_team = Column(String, nullable=False)
     away_team = Column(String, nullable=False)
     league = Column(String, nullable=False)
-    # ✅ FIXED: DateTime without timezone - stores naive UTC
-    # This matches the TIMESTAMP WITHOUT TIME ZONE PostgreSQL column type
     kickoff_time = Column(DateTime, nullable=False)
     status = Column(String, default="scheduled")
 
@@ -59,10 +57,7 @@ class Prediction(Base):
     final_ev = Column(Float)
     recommended_stake = Column(Float)
     model_weights = Column(JSON)
-<<<<<<< HEAD
     model_insights = Column(JSON, nullable=True)
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
     confidence = Column(Float)
 
     # Market comparison
@@ -72,7 +67,6 @@ class Prediction(Base):
     normalized_edge = Column(Float)  # After removing bookmaker margin
     vig_free_edge = Column(Float)  # True edge after vig removal
 
-    # ✅ FIXED: timestamp with timezone for system operations
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
     # Constraints

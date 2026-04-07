@@ -1,9 +1,5 @@
 # alembic/versions/001_initial_schema.py
-<<<<<<< HEAD
 """Initial schema for VIT Network - SQLite compatible
-=======
-"""Initial schema for VIT Network - Fixed with all constraints
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 
 Revision ID: 001
 Revises: 
@@ -13,10 +9,6 @@ Create Date: 2024-01-01 00:00:00.000000
 from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
-<<<<<<< HEAD
-=======
-from sqlalchemy.dialects.postgresql import JSON
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 
 # revision identifiers
 revision: str = '001'
@@ -24,19 +16,12 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-<<<<<<< HEAD
 _is_sqlite = op.get_bind().dialect.name == "sqlite" if False else True
 
 
 def upgrade() -> None:
     bind = op.get_bind()
     is_sqlite = bind.dialect.name == "sqlite"
-=======
-
-def upgrade() -> None:
-    # Create edge_status enum
-    op.execute("CREATE TYPE edge_status AS ENUM ('active', 'declining', 'dead', 'archived')")
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 
     # Create matches table
     op.create_table(
@@ -56,7 +41,6 @@ def upgrade() -> None:
         sa.Column('closing_odds_home', sa.Float(), nullable=True),
         sa.Column('closing_odds_draw', sa.Float(), nullable=True),
         sa.Column('closing_odds_away', sa.Float(), nullable=True),
-<<<<<<< HEAD
         sa.Column('created_at', sa.DateTime(timezone=True),
                   server_default=sa.text('CURRENT_TIMESTAMP' if is_sqlite else 'now()')),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
@@ -64,22 +48,11 @@ def upgrade() -> None:
     )
 
     # Create predictions table
-=======
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.text('now()')),
-        sa.PrimaryKeyConstraint('id')
-    )
-
-    # Create predictions table with COMPLETE constraints
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
     op.create_table(
         'predictions',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('match_id', sa.Integer(), nullable=False),
-<<<<<<< HEAD
         sa.Column('request_hash', sa.String(), nullable=True),
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         sa.Column('home_prob', sa.Float(), nullable=False),
         sa.Column('draw_prob', sa.Float(), nullable=False),
         sa.Column('away_prob', sa.Float(), nullable=False),
@@ -90,18 +63,14 @@ def upgrade() -> None:
         sa.Column('consensus_prob', sa.Float()),
         sa.Column('final_ev', sa.Float()),
         sa.Column('recommended_stake', sa.Float()),
-<<<<<<< HEAD
         sa.Column('model_weights', sa.JSON()),
-=======
-        sa.Column('model_weights', sa.JSON()),  # Use sa.JSON() for portability
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
+        sa.Column('model_insights', sa.JSON(), nullable=True),
         sa.Column('confidence', sa.Float()),
         sa.Column('bet_side', sa.String(), nullable=True),
         sa.Column('entry_odds', sa.Float()),
         sa.Column('raw_edge', sa.Float()),
         sa.Column('normalized_edge', sa.Float()),
         sa.Column('vig_free_edge', sa.Float()),
-<<<<<<< HEAD
         sa.Column('timestamp', sa.DateTime(timezone=True),
                   server_default=sa.text('CURRENT_TIMESTAMP' if is_sqlite else 'now()')),
         sa.ForeignKeyConstraint(['match_id'], ['matches.id'], ondelete='CASCADE'),
@@ -114,24 +83,6 @@ def upgrade() -> None:
     )
 
     # Create clv_entries table
-=======
-        sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()')),
-        sa.ForeignKeyConstraint(['match_id'], ['matches.id'], ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('id'),
-        # Individual probability bounds
-        sa.CheckConstraint('home_prob >= 0 AND home_prob <= 1', name='check_home_prob'),
-        sa.CheckConstraint('draw_prob >= 0 AND draw_prob <= 1', name='check_draw_prob'),
-        sa.CheckConstraint('away_prob >= 0 AND away_prob <= 1', name='check_away_prob'),
-        # CRITICAL FIX: Sum to 1 constraint
-        sa.CheckConstraint(
-            'abs(home_prob + draw_prob + away_prob - 1.0) < 0.01',
-            name='check_probabilities_sum_to_one'
-        ),
-        sa.CheckConstraint('recommended_stake >= 0 AND recommended_stake <= 0.20', name='check_stake_limit')
-    )
-
-    # Create clv_entries table with CASCADE
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
     op.create_table(
         'clv_entries',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -143,22 +94,14 @@ def upgrade() -> None:
         sa.Column('clv', sa.Float(), nullable=True),
         sa.Column('bet_outcome', sa.String(), nullable=True),
         sa.Column('profit', sa.Float(), nullable=True),
-<<<<<<< HEAD
         sa.Column('timestamp', sa.DateTime(timezone=True),
                   server_default=sa.text('CURRENT_TIMESTAMP' if is_sqlite else 'now()')),
-=======
-        sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()')),
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         sa.ForeignKeyConstraint(['match_id'], ['matches.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['prediction_id'], ['predictions.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
 
-<<<<<<< HEAD
     # Create edges table (using String instead of PostgreSQL ENUM)
-=======
-    # Create edges table with ENUM
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
     op.create_table(
         'edges',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -172,19 +115,11 @@ def upgrade() -> None:
         sa.Column('home_condition', sa.String(), nullable=True),
         sa.Column('away_condition', sa.String(), nullable=True),
         sa.Column('market', sa.String(), server_default='1x2'),
-<<<<<<< HEAD
         sa.Column('status', sa.String(), server_default='active'),
         sa.Column('decay_rate', sa.Float(), server_default='0.02'),
         sa.Column('created_at', sa.DateTime(timezone=True),
                   server_default=sa.text('CURRENT_TIMESTAMP' if is_sqlite else 'now()')),
         sa.Column('last_updated', sa.DateTime(timezone=True), nullable=True),
-=======
-        sa.Column('status', sa.Enum('active', 'declining', 'dead', 'archived', name='edge_status'), 
-                  server_default='active'),
-        sa.Column('decay_rate', sa.Float(), server_default='0.02'),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()')),
-        sa.Column('last_updated', sa.DateTime(timezone=True), onupdate=sa.text('now()')),
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         sa.Column('archived_at', sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('edge_id')
@@ -197,32 +132,22 @@ def upgrade() -> None:
         sa.Column('model_name', sa.String(), nullable=False),
         sa.Column('model_type', sa.String(), nullable=False),
         sa.Column('version', sa.Integer(), server_default='1'),
-<<<<<<< HEAD
         sa.Column('weight_decay_rate', sa.Float(), server_default='0.05'),
         sa.Column('min_weight_threshold', sa.Float(), server_default='0.05'),
         sa.Column('performance_window', sa.Integer(), server_default='100'),
         sa.Column('last_weight_update', sa.DateTime(timezone=True), nullable=True),
         sa.Column('consecutive_underperforming', sa.Integer(), server_default='0'),
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         sa.Column('accuracy_score', sa.Float()),
         sa.Column('current_weight', sa.Float(), server_default='1.0'),
         sa.Column('calibration_error', sa.Float()),
         sa.Column('expected_value', sa.Float()),
         sa.Column('sharpe_ratio', sa.Float()),
         sa.Column('positive_clv_rate', sa.Float(), server_default='0.0'),
-<<<<<<< HEAD
         sa.Column('certified', sa.Boolean(), server_default='0' if is_sqlite else 'false'),
         sa.Column('final_score', sa.Float(), nullable=True),
         sa.Column('last_certified_at', sa.DateTime(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True),
                   server_default=sa.text('CURRENT_TIMESTAMP' if is_sqlite else 'now()')),
-=======
-        sa.Column('certified', sa.Boolean(), server_default='false'),
-        sa.Column('final_score', sa.Float(), nullable=True),
-        sa.Column('last_certified_at', sa.DateTime(), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()')),
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('model_name')
     )
@@ -254,7 +179,3 @@ def downgrade() -> None:
     op.drop_table('clv_entries')
     op.drop_table('predictions')
     op.drop_table('matches')
-<<<<<<< HEAD
-=======
-    op.execute("DROP TYPE edge_status")
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe

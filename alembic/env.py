@@ -15,16 +15,12 @@ from app.db.database import DATABASE_URL
 
 config = context.config
 
-<<<<<<< HEAD
 # Convert async URL to sync URL for Alembic
 if "aiosqlite" in DATABASE_URL:
     sync_url = DATABASE_URL.replace("sqlite+aiosqlite", "sqlite")
 else:
     sync_url = DATABASE_URL.replace("asyncpg", "psycopg2")
-=======
-# CRITICAL FIX: Alembic needs sync URL for some operations
-sync_url = DATABASE_URL.replace("asyncpg", "psycopg2")
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
+
 config.set_main_option("sqlalchemy.url", sync_url)
 
 if config.config_file_name is not None:

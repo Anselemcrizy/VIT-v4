@@ -112,7 +112,6 @@ class ModelOrchestrator:
 
                 self.latencies[name] = round(time.time() - start, 3)
 
-<<<<<<< HEAD
                 # Map MarketType enum names to the MARKETS dict keys
                 _MARKET_NAME_MAP = {
                     "match_odds": "1x2",
@@ -136,14 +135,6 @@ class ModelOrchestrator:
                     'confidence': confidence,
                     'supported_markets': supported_market_keys,
                     'latency_ms': round((time.time() - start) * 1000, 1),
-=======
-                return {
-                    **pred,  # All prediction fields (home_prob, draw_prob, away_prob, over_2_5_prob, etc.)
-                    'model_name': name,
-                    'match_id': match_id,
-                    'confidence': confidence,
-                    'supported_markets': [m.name.lower() for m in model.supported_markets],
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
                     'failed': False
                 }
             except Exception as e:
@@ -311,12 +302,9 @@ class ModelOrchestrator:
             aggregated = self._hybrid_fallback(features) if features else self._default_fallback()
         else:
             aggregated = self.aggregate_predictions(predictions)
-<<<<<<< HEAD
             if aggregated.get("models_certified", 0) == 0 and features and features.get("market_odds"):
                 logger.warning(f"No certified models available for {match_id} - using hybrid fallback")
                 aggregated = self._hybrid_fallback(features)
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 
         return {
             "match_id": match_id,
@@ -349,4 +337,4 @@ class ModelOrchestrator:
         return list(self.models.keys())
 
     def get_model(self, name: str):
-        return self.models.get(name, None)
+        return self.models.get(name)

@@ -13,17 +13,10 @@ from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
-<<<<<<< HEAD
 from sqlalchemy import select, text
 
 from app.config import get_env
 from app.db.database import engine, Base, get_db, _is_sqlite
-=======
-from sqlalchemy import select
-
-from app.config import get_env
-from app.db.database import engine, Base, get_db
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 from app.api.routes import predict, result, history, admin
 from app.api.middleware.auth import APIKeyMiddleware
 from app.api.middleware.logging import LoggingMiddleware
@@ -99,15 +92,13 @@ async def fetch_and_predict(competition: str, days_ahead: int = 7):
                     if telegram_alerts and telegram_alerts.enabled:
                         from app.services.alerts import BetAlert
 
-                        # FIX: Ensure kickoff_time is timezone-naive UTC
                         kickoff_str = fixture.get("kickoff_time", datetime.now(timezone.utc).isoformat())
                         try:
-                            # Parse ISO string and strip timezone info (store as naive UTC)
                             if isinstance(kickoff_str, str):
                                 parsed = datetime.fromisoformat(kickoff_str.replace('Z', '+00:00'))
-                                kickoff_time = parsed.replace(tzinfo=None)  # Make timezone-naive
+                                kickoff_time = parsed.replace(tzinfo=None)
                             else:
-                                kickoff_time = kickoff_str.replace(tzinfo=None)  # Remove timezone info
+                                kickoff_time = kickoff_str.replace(tzinfo=None)
                         except Exception as e:
                             print(f"⚠️ Kickoff time parse error: {e}")
                             kickoff_time = datetime.now()
@@ -228,7 +219,6 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-<<<<<<< HEAD
         # Add model_insights column if missing (safe migration)
         try:
             async with engine.begin() as conn:
@@ -244,8 +234,6 @@ async def lifespan(app: FastAPI):
         except Exception:
             pass  # Column already exists, that's fine
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         # Verify connection
         db_ok = await _check_db_connection()
         if db_ok:
@@ -332,11 +320,6 @@ async def fetch_fixtures(
 ):
     """
     Fetch fixtures and optionally run predictions in background.
-
-    Args:
-        competition: League name (premier_league, la_liga, bundesliga, serie_a, ligue_1)
-        days_ahead: Number of days to look ahead
-        background_tasks: If True, runs predictions async
     """
     if not data_loader:
         return {"error": "Data loader not initialized", "status": "unavailable"}
@@ -385,14 +368,7 @@ async def fetch_historical(
     days_back: int = 90,
     limit: int = 100
 ):
-    """
-    Fetch historical matches for training/backtesting.
-
-    Args:
-        competition: League name
-        days_back: How many days back to fetch
-        limit: Maximum matches to return
-    """
+    """Fetch historical matches for training/backtesting."""
     if not data_loader:
         return {"error": "Data loader not initialized", "status": "unavailable"}
 
@@ -418,13 +394,7 @@ async def get_odds(
     competition: str = "premier_league",
     days_ahead: int = 3
 ):
-    """
-    Get current odds from all bookmakers.
-
-    Args:
-        competition: League name
-        days_ahead: Look-ahead window
-    """
+    """Get current odds from all bookmakers."""
     if not data_loader:
         return {"error": "Data loader not initialized", "status": "unavailable"}
 
@@ -466,13 +436,7 @@ async def get_odds(
 
 @app.get("/odds/sharp")
 async def get_sharp_odds(competition: str = "premier_league"):
-    """
-    Get odds from sharp books only (Pinnacle).
-    Useful for edge calculation and line movement tracking.
-
-    Args:
-        competition: League name
-    """
+    """Get odds from sharp books only (Pinnacle)."""
     if not data_loader:
         return {"error": "Data loader not initialized", "status": "unavailable"}
 
@@ -552,11 +516,7 @@ async def system_status():
         },
         "database": {
             "connected": db_connected,
-<<<<<<< HEAD
             "type": "sqlite" if _is_sqlite else "postgresql"
-=======
-            "type": "postgresql"
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         }
     }
 
@@ -564,17 +524,7 @@ async def system_status():
 # --- TESTING ENDPOINT ---
 @app.post("/test-predict")
 async def test_predict(match: dict):
-    """
-    Test prediction without database persistence.
-    Useful for debugging model output.
-
-    Example:
-        {
-            "home_team": "Arsenal",
-            "away_team": "Chelsea",
-            "league": "premier_league"
-        }
-    """
+    """Test prediction without database persistence."""
     if orchestrator is None:
         return {"error": "Orchestrator not initialized", "status": "unavailable"}
 
@@ -614,44 +564,27 @@ async def root():
         },
         "endpoints": {
             "core": {
-                "POST /api/predict": "Generate prediction for a match",
-                "POST /api/result/{match_id}": "Update match result",
-                "GET /api/history": "View prediction history"
+                "POST /predict": "Generate prediction for a match",
+                "POST /results/{match_id}": "Submit actual match result",
+                "GET /history": "Retrieve prediction history",
+                "GET /health": "Health check",
+                "GET /system/status": "System status"
             },
             "data": {
                 "GET /fetch": "Fetch upcoming fixtures",
                 "GET /fetch/historical": "Fetch historical matches",
-                "GET /odds": "Get current odds (all bookmakers)",
-                "GET /odds/sharp": "Get sharp odds (Pinnacle)"
+                "GET /odds": "Get current bookmaker odds",
+                "GET /odds/sharp": "Get sharp book odds (Pinnacle)"
             },
-            "testing": {
-                "POST /test-predict": "Test prediction without DB",
-                "GET /health": "Health check",
-                "GET /system/status": "System diagnostics"
-            },
-            "alerts": {
-                "GET /alerts/test": "Test Telegram alerts",
-                "GET /alerts/status": "Alerts system status"
+            "admin": {
+                "GET /admin/models": "View model registry",
+                "POST /admin/retrain": "Trigger model retraining"
             }
         }
     }
 
 
-# --- STATIC FRONTEND (mount last - catches unmatched routes) ---
-if os.path.isdir("frontend/dist"):
-    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="frontend")
-
-
-# --- EXECUTION ---
-if __name__ == "__main__":
-    import uvicorn
-
-    port = int(os.getenv("PORT", "5000"))
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=port,
-        reload=True,
-        log_level="info"
-    )
+# Static files (React frontend) - only if dist folder exists
+frontend_dist = os.path.join(os.path.dirname(__file__), "frontend", "dist")
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")

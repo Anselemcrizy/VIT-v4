@@ -11,8 +11,8 @@ A sports prediction API built with FastAPI that uses a multi-model ML ensemble t
 - **Run command**: `uvicorn main:app --host 0.0.0.0 --port 5000`
 
 ### Database
-- **Type**: PostgreSQL (Replit-managed, via `DATABASE_URL` env var pointing to `helium`)
-- **ORM**: SQLAlchemy async with asyncpg driver
+- **Type**: PostgreSQL (Replit-managed, via `DATABASE_URL` env var pointing to `helium`) or SQLite fallback
+- **ORM**: SQLAlchemy async with asyncpg driver (aiosqlite for SQLite)
 - **Tables**: `matches`, `predictions`, `clv_entries`, `edges`, `model_performances`
 
 ### ML Orchestrator
@@ -38,7 +38,7 @@ A sports prediction API built with FastAPI that uses a multi-model ML ensemble t
 - `GET /system/status` — System status
 
 ## Environment
-- `DATABASE_URL` — Set by Replit to PostgreSQL on `helium`
+- `DATABASE_URL` — Set by Replit to PostgreSQL on `helium` (falls back to SQLite)
 - `API_KEY` — `dev_api_key_12345` (from `.env`)
 - `ODDS_API_KEY` — Set via Replit secrets
 - `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` — For bet alerts
@@ -48,7 +48,6 @@ Core: fastapi, uvicorn, sqlalchemy, asyncpg, aiosqlite, python-dotenv
 ML: numpy, scipy, pandas, scikit-learn, xgboost
 HTTP: httpx, beautifulsoup4, tenacity
 
-<<<<<<< HEAD
 ## Frontend
 - **Location**: `frontend/` — React + Vite app
 - **Built output**: `frontend/dist/` (served as static files by FastAPI at `/`)
@@ -64,14 +63,9 @@ HTTP: httpx, beautifulsoup4, tenacity
 - `alembic/versions/001_initial_schema.py` — SQLite-compatible (no PostgreSQL ENUMs, uses `CURRENT_TIMESTAMP`)
 - App auto-creates tables at startup via `Base.metadata.create_all` — Alembic is optional for development
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
 ## Notes
 - PyTorch, PyMC, optuna, transformers, sentence-transformers, econml are NOT installed (heavy dependencies). Models requiring these are gracefully skipped at startup.
 - The models directory `/models/*.pkl` contains pre-trained model weights for: anomaly, ensemble, monte_carlo, poisson
 - Models path is resolved relative to the project root, not hardcoded
-<<<<<<< HEAD
 - `app/db/database.py` automatically selects `NullPool` for SQLite or a queue pool for PostgreSQL based on the `DATABASE_URL`
 - `AUTH_ENABLED=false` in `.env` for development — set to `true` in production and send `x-api-key` header with all requests
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe

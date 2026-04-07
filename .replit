@@ -5,6 +5,7 @@ modules = ["python-3.10:default"]
 [nix]
 channel = "stable-25_05"
 packages = ["ffmpeg-full", "gitFull", "glibcLocales", "libxcrypt", "pkg-config", "playwright-driver", "postgresql", "xcodebuild", "xsimd", "zlib"]
+<<<<<<< HEAD
 
 [userenv]
 
@@ -18,3 +19,5 @@ MIN_EDGE_THRESHOLD = "0.02"
 MAX_BANKROLL_PERCENT = "0.10"
 ENABLE_SCRAPING = "false"
 ENABLE_ODDS = "false"
+=======
+>>>>>>> 83f7e17 (Update application to improve database interactions and model insights)

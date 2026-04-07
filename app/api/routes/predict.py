@@ -43,28 +43,18 @@ def set_telegram_alerts(alerts):
 def to_naive_utc(dt_input) -> datetime:
     """
     Convert any datetime to naive UTC for storage in TIMESTAMP WITHOUT TIME ZONE.
-
-    Args:
-        dt_input: datetime object or ISO string
-
-    Returns:
-        Naive datetime object (timezone-aware datetimes converted to UTC, then stripped)
     """
     if isinstance(dt_input, str):
-        # Parse ISO string
         try:
             parsed = datetime.fromisoformat(dt_input.replace('Z', '+00:00'))
-            # Strip timezone info - assume it's UTC
             return parsed.replace(tzinfo=None)
         except Exception as e:
             logger.warning(f"Failed to parse kickoff_time string '{dt_input}': {e}")
             return datetime.now()
     elif isinstance(dt_input, datetime):
-        # If it has timezone info, convert to UTC then strip
         if dt_input.tzinfo is not None:
             utc_dt = dt_input.astimezone(timezone.utc)
             return utc_dt.replace(tzinfo=None)
-        # If already naive, assume it's UTC and return as-is
         return dt_input
     else:
         return datetime.now()
@@ -141,7 +131,7 @@ async def predict(
             if db_match:
                 return build_prediction_response(existing_pred, db_match)
 
-        # ✅ FIX: Convert kickoff_time to naive UTC before saving
+        # Convert kickoff_time to naive UTC before saving
         naive_kickoff = to_naive_utc(match.kickoff_time)
 
         logger.debug(f"Kickoff time conversion: {match.kickoff_time} -> {naive_kickoff}")
@@ -151,7 +141,7 @@ async def predict(
             home_team=match.home_team,
             away_team=match.away_team,
             league=match.league,
-            kickoff_time=naive_kickoff,  # ✅ Use naive UTC
+            kickoff_time=naive_kickoff,
             opening_odds_home=match.market_odds.get("home"),
             opening_odds_draw=match.market_odds.get("draw"),
             opening_odds_away=match.market_odds.get("away")
@@ -195,7 +185,6 @@ async def predict(
         probs = {"home": home_prob, "draw": draw_prob, "away": away_prob}
         consensus_prob = max(probs.values())
 
-<<<<<<< HEAD
         # Build per-model insights for storage and explainability
         individual_results = raw_result.get("individual_results", [])
         model_insights_payload = [
@@ -222,8 +211,6 @@ async def predict(
             for p in individual_results
         ]
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
         # Save prediction
         prediction = Prediction(
             request_hash=idempotency_key,
@@ -239,10 +226,7 @@ async def predict(
             final_ev=best_bet.get("edge", 0),
             recommended_stake=recommended_stake,
             model_weights=result.get("model_weights", {}),
-<<<<<<< HEAD
             model_insights=model_insights_payload,
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
             confidence=result.get("confidence", {}).get("1x2", 0.5),
             bet_side=best_bet.get("best_side"),
             entry_odds=best_bet.get("odds", 2.0),
@@ -256,7 +240,6 @@ async def predict(
 
         logger.info(f"Prediction saved: match_id={db_match.id}, side={best_bet.get('best_side')}, edge={best_bet.get('edge', 0):.4f}")
 
-<<<<<<< HEAD
         # Record CLV entry so closing-line value can be tracked after match
         if best_bet.get("has_edge") and best_bet.get("best_side") and best_bet.get("odds", 0) > 0:
             try:
@@ -268,9 +251,7 @@ async def predict(
             except Exception as e:
                 logger.warning(f"CLV record_entry failed (non-fatal): {e}")
 
-=======
->>>>>>> 4d5f14d533612f7d8fd7782bc57596cd95018ffe
-        # ✅ Send Telegram alert if edge > 3%
+        # Send Telegram alert if edge > 3%
         edge_value = best_bet.get("edge", 0)
         if edge_value > 0.03 and telegram_alerts and telegram_alerts.enabled:
             try:
